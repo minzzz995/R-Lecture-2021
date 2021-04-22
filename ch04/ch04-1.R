@@ -8,5 +8,27 @@ str(students)
 students <- read.csv('data/students.csv') #여기서의 data가 파일이름으로 파일이름을 써줘야함
 students
 
-#파일 쓰기 (encoding 신경쓸 것)
+#파일 쓰기 (encoding 신경쓸 것) (?write.table)
 write.table(students,file = 'data/output.txt',fileEncoding = 'utf-8')
+write.csv(students,file = 'data/output.csv')
+
+#row.names=F option설정, 행 인덱스 번호를 저장하지 않음
+write.table(students,file = 'data/output.txt', fileEncoding = 'utf-8', row.names = F)
+write.csv(students,file = 'data/output.csv', fileEncoding = 'utf-8', row.names = F)
+
+# quote=F option ""사라짐
+write.table(students,file = 'data/output.txt',fileEncoding = 'utf-8',row.names = F,quote=F)
+write.csv(students,file = 'data/output.csv',fileEncoding = 'utf-8',row.names = F,quote = F)
+
+#제대로 읽는지 확인
+students <- read.table('data/output.txt', header = T) # as.is = T
+students <- read.table('data/output.txt', header = T, fill=T, fileEncoding = 'utf-8')
+students
+students <- read.csv('data/output.csv', fileEncoding = 'utf-8')
+students
+str(students)
+
+
+#읽을 때 stringAsFactors = F로 하면 문자열을 범주형으로 읽지 않음
+students <- read.csv('data/output.csv', fileEncoding = 'utf-8',stringsAsFactors = F)
+
