@@ -49,7 +49,7 @@ patients
 patients_outrm <- patients[(patients$gender=='M'|patients$gender=='F'),]
 patients_outrm
 #성별과 혈액형의 이상치 제거
-patients_outrm <- patients[patients$gender=='M'|patients$gender=='F)' &
+patients_outrm <- patients[patients$gender=='M'|patients$gender=='F' &
                   (patients$blood.type=='A'|patients$blood.type=='B'|patients$blood.type=='O'|patients$blood.type=='AB'),]
 patients_outrm
 
