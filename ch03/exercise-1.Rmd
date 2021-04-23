@@ -49,6 +49,15 @@ airquality$Wind == max(airquality$Wind)
 airquality [airquality$Wind == maxWind,]
 ```
 
+```{r}
+max_wind <-
+    
+date_type <- as.Date(date)
+date_type
+```
+
+
+
 ## 연습문데 06.
 ### airquality 데이터에서는 총 몇 개의 NA가 포함되어 있는가?
 ```{r}
@@ -69,5 +78,13 @@ answer is fiji
 maxmag <- max(quakes$mag)
 ```
 answer is 6.4
+```{r}
+max(quakes$mag)
+quakes[quakes$mag == max(quakes$mag),]
+
+#Date type으로
+# days <- seq(as.Date{{'2021-04-01')},as.Date('),by=1)
+# days
+```
 
 

@@ -58,8 +58,9 @@ patients1
 patients2[length(patients2$name)+1,] <- c('영희','A')
 patients2
 
+
 #열 추가
-patients1('birth_year') <- c(1500,1550,1600,1800)
+patients1['birth_year'] <- c(1500,1550,1600,1800)
 patients1
 
 #merge
