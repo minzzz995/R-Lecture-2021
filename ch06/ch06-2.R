@@ -3,6 +3,7 @@ library(gapminder)
 library(dplyr)
 
 y <- gapminder %>% group_by(year,continent) %>% summarise(c_pop=sum(pop))
+
 #데이터를 보고 x축의 값, y축의 값을 생각해야 함
 head(y,10)
 
@@ -70,6 +71,7 @@ ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,
     geom_point(alpha=0.5) +
     scale_x_log10() +
     facet_wrap(~year)
+?gapminder
 
 #시각화 기본기능
 #1. 비교/순위
@@ -114,3 +116,5 @@ x %>%
 
 #7. 상관관계
 plot(log10(gapminder$gdpPercap),gapminder$lifeExp) #우상향 > 양의 상관관계가 있어 비례한다
+ 
+

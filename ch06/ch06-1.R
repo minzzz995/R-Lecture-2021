@@ -19,3 +19,4 @@ for (i in i:4) {
 
 #요약
 summary(anscombe)
+

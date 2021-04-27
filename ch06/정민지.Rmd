@@ -1,0 +1,37 @@
+---
+title: "ch04_단원문제"
+author: "jeong minji"
+date: '2021 4 27 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 연습문제01
+### gapminder 데이터에 기록된 전 세계 인구의 구성 비율은 어떻게 변화하고 있을까?
+#### (1) 전체관측기간(1952년 ~ 2007년) 중 1952년의 인구 구성을 추출한 후 [그림 6-25]와 같이 시각화하라.
+```{r}
+x <- gapminder %>% 
+    filter(year==1952) %>%
+    select(country,pop) %>%
+    arrange(desc(pop)) %>%
+    head()
+x
+pie(x$pop,x$country)    
+barplot(x$pop,names.arg=x$country)
+
+```
+
+#### (2) 1952년 ~ 2007년의 인구 구성을 for문을 이용해 반복적으로 시각화하라.
+```{r}
+
+```
+
+#### (3) 시각화 그래프를 통해 알게 된 사실을 몇 가지로 요약하라.
+```{r}
+
+```
+
+
