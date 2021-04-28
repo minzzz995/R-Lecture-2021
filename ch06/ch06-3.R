@@ -51,6 +51,7 @@ gapminder %>%
     ggplot(aes(continent,lifeExp,col=continent)) +
     geom_boxplot()
 
+
 #3. scale_x_log10(), scale_y_log10()
 ggplot(gapminder,aes(gdpPercap,lifeExp,col=continent)) +
     geom_point(alpha=0.2)
