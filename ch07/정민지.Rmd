@@ -6,12 +6,13 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
 ```
 
-## 연습문제
+## Galton 아버지(Father)와 아들의 키(Height)의 회귀식을 구해보고 의미를 파악해보시오.
 ```{r}
-galton <- read.csv('http://www.randomservices.org/random/data/Galton.txt',
-                sep='\t')
+galton <- read.table('https://www.randomservices.org/random/data/Galton.txt',header = T)
 head(galton)
 str(galton)
 
@@ -21,12 +22,36 @@ galton$Height <- galton$Height*2.54
 head(galton)
 
 male_data <- subset(galton, Gender =="M")
+head(male_data)
+
 model <- lm(Height ~ Father,data = male_data)
 coef(model)
 # model : y = 0.448X + 97.178
 
-summary(model)
+ggplot(galton, aes(Father, Height)) +
+  geom_point(position='jitter', color='blue') +
+  geom_abline(intercept=coef(model)[1], slope=coef(model)[2], color='yellow', size=1)
+
 par(mfrow=c(2,2))
 plot(model,lwd=2)
+
+summary(model)
+
+g2 <- lm(Height~poly(Father,2), data = galton)
+summary(g2)    
+coef(g2)
+
+# MSE
+deviance(model) / length(galton$Height)
+```
+
+```{r}
+# 적합도 검정한 결과를 보면 P-value값이 0.05이하이며 ***상태로 유의하다고 판단할 수 있다.
+# 그리고  R-squared값을 보면 비교적 낮게 나온것으로 보아 아들의 키는 아버지의 키 외에도 다른 영향도 염두해볼 수 있다.
+# 그래프로 나타낸 회귀모형의 잔차분석으로는 을
+# 자기멋대로 분포되어있어 무작위 잡음을 보여주는 선형성
+# 그래프의 점들은 45도 각도의 직선 위에 대각선 방향의 점으로 있어 정규성을 만족한다
+# 중앙인 빨간선으로 몰려있다면 좋음
+# 데이터가 회귀선 주위로 부채꼴이 아니라 동일한 범위 내에서 분포하여 등분산성이 만족한다
 ```
 
