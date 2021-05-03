@@ -1,0 +1,101 @@
+---
+title: "model"
+author: "jeong minji"
+date: '2021 5 3 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 연습문제01
+### ucla 데이터
+```{r}
+# 데이터 불러오기
+ucla <- read.csv('https://stats.idre.ucla.edu/stat/data/binary.csv')
+str(ucla)
+ucla$admit <- factor(ucla$admit)
+
+train_index <- createDataPartition(ucla$admit, p=0.8,list = F) 
+ucla_train <- ucla[train_index,]
+ucla_test <- ucla[-train_index,]
+table(ucla_train$admit)
+table(ucla_test$admit)
+
+# 결정트리
+dtc <- rpart(admit~.,ucla_train) 
+pred <- predict(dtc, ucla_test, type='class')
+confusionMatrix(pred,ucla_test$admit)
+rpart.plot(dtc)
+
+# 랜덤포레스트
+library(caret)
+library(randomForest)
+rf <- randomForest(admit ~.,ucla_train)
+pred <- predict(rf, ucla_test, type = 'class')
+confusionMatrix(pred, ucla_test$admit)
+plot(rf)
+
+# SVM
+library(e1071)
+svc <- svm(admit~.,ucla_train)
+pred <- predict(svc, ucla_test, type='class')
+table(pred, ucla_test$admit) 
+confusionMatrix(pred, ucla_test$admit)
+
+# K-NN 
+library(class)
+k <- knn(ucla_train[,1:4],ucla_test[,1:4],ucla_train$admit,k=5)
+ucla_test$admit
+confusionMatrix(k,ucla_test$admit)
+```
+
+## 연습문제02
+### wine 데이터
+```{r}
+# 데이터 불러오기
+wine <- read.table('data/wine.data.txt',sep=',')
+head(wine)
+columns <- readLines('data/wine.name.txt')
+names(wine)[2:14] <- columns
+wine$V1 <- factor(wine$V1)
+str(wine)
+
+train_index <- createDataPartition(wine$admit, p=0.8,list = F) 
+wine_train <- wine[train_index,]
+wine_test <- wine[-train_index,]
+table(wine_train$admit)
+table(wine_test$admit)
+
+# 결정트리
+dtc <- rpart(admit~.,wine_train) 
+pred <- predict(dtc, wine_test, type='class')
+confusionMatrix(pred,wine_test$admit)
+rpart.plot(dtc)
+
+# 랜덤포레스트
+library(caret)
+library(randomForest)
+rf <- randomForest(admit ~.,wine_train)
+pred <- predict(rf, wine_test, type = 'class')
+confusionMatrix(pred, wine_test$admit)
+plot(rf)
+
+# SVM
+library(e1071)
+svc <- svm(admit~.,wine_train)
+pred <- predict(svc, wine_test, type='class')
+table(pred, wine_test$admit) 
+confusionMatrix(pred, wine_test$admit)
+
+# K-NN 
+library(class)
+k <- knn(wine_train[,1:4],wine_test[,1:4],wine_train$admit,k=5)
+wine_test$admit
+confusionMatrix(k,wine_test$admit)
+
+
+
+```
+
