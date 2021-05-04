@@ -7,6 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(rpart)
+library(caret)
+library(randomForest)
+library(e1071)
+library(class)
 ```
 
 ## 연습문제01
@@ -14,86 +19,121 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 # 데이터 불러오기
 ucla <- read.csv('https://stats.idre.ucla.edu/stat/data/binary.csv')
-str(ucla)
 ucla$admit <- factor(ucla$admit)
+#as.factor(ucla$admit) -> 값이 바뀌진 않음
 
+set.seed(2021)
 train_index <- createDataPartition(ucla$admit, p=0.8,list = F) 
 ucla_train <- ucla[train_index,]
 ucla_test <- ucla[-train_index,]
-table(ucla_train$admit)
-table(ucla_test$admit)
 
 # 결정트리
 dtc <- rpart(admit~.,ucla_train) 
 pred <- predict(dtc, ucla_test, type='class')
-confusionMatrix(pred,ucla_test$admit)
-rpart.plot(dtc)
+table(pred,ucla_test$admit) # 여기서 [1,1],[2,2]출력
+t <- table(pred,ucla_test$admit)
+dt_a <- (t[1,1] + t[2,2]) / nrow(ucla_test) #정확도 확인
+dt_a
+#confusionMatrix(pred,ucla_test$admit) #혼동행렬, 혼돈행렬, 오차행렬
+#rpart.plot(dtc)
 
 # 랜덤포레스트
-library(caret)
-library(randomForest)
 rf <- randomForest(admit ~.,ucla_train)
 pred <- predict(rf, ucla_test, type = 'class')
-confusionMatrix(pred, ucla_test$admit)
-plot(rf)
+t <- table(pred,ucla_test$admit)
+rf_a <- (t[1,1] + t[2,2]) / nrow(ucla_test)
+rf_a
+#confusionMatrix(pred, ucla_test$admit)
+#plot(rf)
 
 # SVM
-library(e1071)
 svc <- svm(admit~.,ucla_train)
 pred <- predict(svc, ucla_test, type='class')
-table(pred, ucla_test$admit) 
-confusionMatrix(pred, ucla_test$admit)
+t <- table(pred, ucla_test$admit) 
+sv_a <- (t[1,1] + t[2,2]) / nrow(ucla_test)
+sv_a
+#confusionMatrix(pred, ucla_test$admit)
 
-# K-NN 
-library(class)
-k <- knn(ucla_train[,1:4],ucla_test[,1:4],ucla_train$admit,k=5)
-ucla_test$admit
-confusionMatrix(k,ucla_test$admit)
+# K-NN / 학습자체가 예측임
+k <- knn(ucla_train[,2:4],ucla_test[,2:4],ucla_train$admit,k=5)
+t <- table(pred, ucla_test$admit) 
+kn_a <- (t[1,1] + t[2,2]) / nrow(ucla_test)
+kn_a
+#confusionMatrix(k,ucla_test$admit)
+
+# 로지스틱 회귀(이진분류일 경우)
+lr <- glm(admit~.,ucla_train,family = binomial)
+lr_pred <- predict(lr, ucla_test, type = 'response')
+lr_pred
+lf_pred <- ifelse(lr_pred > 0.5,1,0)
+t <- table(lr_pred,ucla_test$admit)
+lr_a <- (t[1,1]+t[2,2]) / nrow(ucla_test)
+lr_a
+
+print(paste(dt_a, rf_a,sv_a,kn_a,lr_a))
 ```
 
 ## 연습문제02
 ### wine 데이터
 ```{r}
-# 데이터 불러오기
-wine <- read.table('data/wine.data.txt',sep=',')
-head(wine)
-columns <- readLines('data/wine.name.txt')
-names(wine)[2:14] <- columns
-wine$V1 <- factor(wine$V1)
-str(wine)
+library(caret)
+library(randomForest)
+library(e1071)
+library(class)
 
+# 데이터 불러오기
+wine <- read.table('data/wine.data.txt', sep=',')
+head(wine)
+columns <- readLines('data/wine.name2.txt')
+columns
+names(wine)[2:14] <- substr(columns, 4, nchar(columns))
+names(wine)[1] <- 'Y'
+head(wine)
+str(wine)
+wine$Y <- factor(wine$Y)
+
+set.seed(2021)
 train_index <- createDataPartition(wine$admit, p=0.8,list = F) 
 wine_train <- wine[train_index,]
 wine_test <- wine[-train_index,]
-table(wine_train$admit)
-table(wine_test$admit)
+table(wine$Y)
+table(wine_train$Y)
 
 # 결정트리
 dtc <- rpart(admit~.,wine_train) 
 pred <- predict(dtc, wine_test, type='class')
-confusionMatrix(pred,wine_test$admit)
-rpart.plot(dtc)
+t <- table(pred,wine_test$Y)
+t
+dt_a <- (t[1,1]+t[2,2]+t[3,3]) / nrow(wine_test)
+dt_a
+#confusionMatrix(pred,wine_test$admit)
+#rpart.plot(dtc)
 
 # 랜덤포레스트
-library(caret)
-library(randomForest)
-rf <- randomForest(admit ~.,wine_train)
+rf <- randomForest(Y ~.,wine_train)
 pred <- predict(rf, wine_test, type = 'class')
-confusionMatrix(pred, wine_test$admit)
-plot(rf)
+t <- table(pred,wine_test$Y)
+t
+rf_a <- (t[1,1]+t[2,2]+t[3,3]) / nrow(wine_test)
+rf_a
+#confusionMatrix(pred, wine_test$admit)
+#plot(rf)
 
 # SVM
-library(e1071)
-svc <- svm(admit~.,wine_train)
-pred <- predict(svc, wine_test, type='class')
-table(pred, wine_test$admit) 
-confusionMatrix(pred, wine_test$admit)
+sv <- randomForest(Y ~.,wine_train)
+pred <- predict(sv, wine_test, type = 'class')
+t <- table(pred,wine_test$Y)
+t
+sv_a <- (t[1,1]+t[2,2]+t[3,3]) / nrow(wine_test)
+sv_a
+#confusionMatrix(pred, wine_test$admit)
 
 # K-NN 
-library(class)
-k <- knn(wine_train[,1:4],wine_test[,1:4],wine_train$admit,k=5)
-wine_test$admit
-confusionMatrix(k,wine_test$admit)
+k <- knn(wine_train[,2:4],wine_test[,2:4],wine_train$Y,k=5)
+t <- table(pred, wine_test$Y) 
+kn_a <- (t[1,1] + t[2,2]) / nrow(wine_test)
+kn_a
+#confusionMatrix(k,wine_test$admit)
 
 
 
