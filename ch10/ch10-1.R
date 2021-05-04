@@ -24,7 +24,7 @@ for (i in 1:k) {
     print((t[1,1]+t[2,2]+t[3,3])/nrow(data_test))
     acc <- acc + (t[1,1]+t[2,2]+t[3,3]) / nrow(data_test)
 }
-average_accuracy <- acc/k
+average_accuracy <- acc / k
 average_accuracy
 
 ################################
@@ -51,3 +51,4 @@ resamp <- resamples(list(결정트리=dt, 랜덤포레스트=rf,
                              SVM=sv,KNN=kn))
 summary(resamp)
 sort(resamp,decreasing = T)
+dotplot(resamp)

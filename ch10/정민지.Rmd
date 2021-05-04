@@ -1,0 +1,96 @@
+---
+title: "chapter10"
+author: "jeong minji"
+date: '2021 5 4 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 연습문제01
+### colon 데이터에 랜덤 포리스트를 적용하는데 k-겹 교차검증을 k를 5,10,15,20으로 바꾸면서 적용하라. 각각의 혼동 행렬과 정확률을 제시하라.
+```{r}
+
+library(survival)
+str(colon)
+clean_colon <- na.omit(colon)
+clena_colon <- clean_colon[c(TRUE,FALSE),]
+clean_colon$status <- factor(clean_colon$status)
+
+set.seed(2021)
+data <- colon[sample(nrow(colon)),] 
+options(digits = 4)
+
+k <- 5
+q <- nrow(data) / k
+l <- 1:nrow(data)
+acc <- 0
+
+accuracy <- 0
+precision <- 0
+recall <- 0
+control <- trainControl(method = 'cv',number = 5)
+new_rf <- train(status~.,data=clean_colon,method = 'rf',
+                metric='Accuracy',trControl=control)
+confusionMatrix(new_rf)
+
+for (i in 1:k) {
+    train_index <- createDataPartition(colon$status, p=0.8,list = F)
+    colon_train <- colon[train_index,]
+    colon_test <- colon[-train_index,]
+    pred <- knn(data_train[,2:4], data_test[,2:4],
+                data_train$status,k=5)
+    t <- table(pred,data_test$status)
+    accuracy <- accuracy + (t[1,1]+t[2,2]) / nrow(data_test)
+    precision <- precision + t[2,2]/(t[2,1]+t[2,2])
+    recall <- recall + t[2,2]/(t[1,2]+t[2,2])
+}
+kn_avg_acc <- accuracy / k
+kn_avg_prec <- precision / k
+kn_avg_rec <- recall / k
+
+sprintf('K-NN : 정확도=%f, 정밀도=%f, 재현율=%f',
+        dt_avg_acc, dt_avg_prec, dt_avg_rec)
+```
+
+## 연습문제02
+### 353 ~ 356쪽의 과정을 UCLA admission 데이터에 대해 수행하라.
+```{r}
+
+```
+
+## 연습문제 03
+### 353~ 356쪽의 과정을 voice 데이터에 대해 수행하라.
+```{r}
+voice <- read.csv('C:/workspace/R/data/voice.csv')
+str(voice)
+voice$label <- factor(voice$label)
+str(voice)
+
+library(caret)
+control <- trainControl(method = 'cv',number = 10)
+new_rf <- train(label~.,data=voice,method = 'rf',
+                metric='Accuracy',trControl=control)
+confusionMatrix(new_rf)
+
+control <- trainControl(method = 'cv',number = 10)
+dt <- train(label~.,data=voice,method='rpart',
+            metric='Accuracy',trControl=control)
+rf <- train(label~.,data=voice,method='rf',
+            metric='Accuracy',trControl=control)
+sv <- train(label~.,data=voice,method='svmRadial',
+            metric='Accuracy',trControl=control)
+kn <- train(label~.,data=voice,method='knn',
+            metric='Accuracy',trControl=control)
+resamp <- resamples(list(결정트리=dt, 랜덤포레스트=rf,
+                             SVM=sv,KNN=kn))
+summary(resamp)
+sort(resamp,decreasing = T)
+dotplot(resamp)
+
+
+
+```
+
